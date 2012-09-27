@@ -65,7 +65,7 @@ pdf.destroy();
         </textarea>
       </div>
 
-
+<!--
 	    <h3><a href="#">Custom Type1 fonts</a></h3>
 	    <div>
         <input type="file" id="afm_font" />
@@ -109,7 +109,7 @@ reader.onload = function (evt) {
 }
         </textarea>
       </div>
-
+-->
 
 	    <h3><a href="#">Custom TTF fonts</a></h3>
 	    <div>
@@ -149,7 +149,7 @@ reader.readAsArrayBuffer(file);
 	    <h3><a href="#">Custom remote fonts</a></h3>
 	    <div>
         <p>
-          Input URL of a TTF file (note same-origin policy!): <input type="text" value="OpenSans-ExtraBoldItalic.ttf" id="ttf_remote_font" />
+          Input URL of a TTF file (note same-origin policy!): <input type="text" size="35" value="OpenSans-ExtraBoldItalic.ttf" id="ttf_remote_font" />
         </p>
         <textarea rows="20" cols="80" class="code">
 var pdf = new HPDF();
@@ -182,10 +182,9 @@ xhr.send();
     </div>
 
 
-    <a href="https://github.com/manuels/hpdf.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+    <a href="https://github.com/manuels/hpdf.min.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
   </body>
 
-  <script type="text/javascript" src="hpdf.min.js"></script>
   <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
   <script type="text/javascript" src="http://code.jquery.com/ui/1.8.23/jquery-ui.min.js"></script>
 
@@ -214,6 +213,7 @@ xhr.send();
     $(document).ready(function() {
       addDemo('font_demo.js');
       addDemo('line_demo.js');
+      addDemo('png_demo.js');
 
       $('#exec').click(function() {
         var code = $('.code:visible').val();
@@ -230,4 +230,7 @@ xhr.send();
     });
   </script>
 
+
+  <script type="text/javascript" src="hpdf.js"></script>
 </html>
+
