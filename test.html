@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.8.23/themes/base/jquery-ui.css" />
+    <title>hpdf.js - Demo</title>
+
+    <style>
+      textarea.code {
+        font-family: monospace;
+      }
+    </style>
+  </head>
+
+  <body>
+    <ul id="files">
+    </ul>
+
+    <input type="button" id="exec" value="execute" />
+    <div id="accordion">
+  	  <h3><a href="#">Simpe Text</a></h3>
+  	  <div>
+        <textarea rows="20" cols="80" class="code">
+var pdf = new HPDF();
+
+var helvetica = pdf.font('Helvetica');
+
+var title = "This is a test!";
+var page = pdf.addPage();
+page.setFontAndSize(helvetica, 24);
+var tw = page.textWidth(title);
+page.beginText();
+page.moveTextPos( (page.width()-tw)/2, page.height()-50 );
+page.showText(title);
+page.endText();
+
+window.addFile( pdf.toDataUri() );
+
+pdf.destroy();
+        </textarea>
+      </div>
+
+
+	    <h3><a href="#">Page Size</a></h3>
+	    <div>
+        <textarea rows="20" cols="80" class="code">
+var pdf = new HPDF();
+
+var helvetica = pdf.font('Helvetica');
+var title = "This is a test!";
+var page = pdf.addPage();
+page.setSize('a3', 'l'); // l = landscape
+page.setFontAndSize(helvetica, 24);
+var tw = page.textWidth(title);
+page.beginText();
+page.moveTextPos( (page.width()-tw)/2, page.height()-50 );
+page.showText(title);
+page.endText();
+
+window.addFile( pdf.toDataUri() );
+
+pdf.destroy();
+        </textarea>
+      </div>
+
+
+	    <h3><a href="#">Custom Type1 fonts</a></h3>
+	    <div>
+        <input type="file" id="afm_font" />
+        <input type="file" id="pfm_font" />
+        <textarea rows="20" cols="80" class="code">
+var pdf = new HPDF();
+
+var afm_file = $('#afm_font')[0].files[0]
+console.log(afm_file.type);
+if(afm_file.type !== "application/x-font-afm")
+  alert('Please select a .afm file');
+
+var pfm_file = $('#pfm_font')[0].files[0]
+console.log(pfm_file.type);
+if(pfm_file.type !== "application/x-font-pfm")
+  alert('Please select a .pfm file');
+
+var reader = new FileReader();
+reader.readAsArrayBuffer(afm_file, "ascii");
+reader.onload = function (evt) {
+  var afm_file_contents = evt.target.result;
+
+  reader.readAsArrayBuffer(pfm_file, "ascii");
+  reader.onload = function (evt) {
+    var pfm_file_contents = evt.target.result;
+
+    var customfont = pdf.loadType1Font(afm_file_contents, pfm_file_contents);
+    var title = "This is a test!";
+    page = pdf.addPage();
+    page.setFontAndSize(customfont, 24);
+    tw = page.textWidth(title);
+    page.beginText();
+    page.moveTextPos( (page.width()-tw)/2, page.height()-50 );
+    page.showText(title);
+    page.endText();
+
+    window.addFile( pdf.toDataUri() );
+
+    pdf.destroy();
+  }
+}
+        </textarea>
+      </div>
+
+
+	    <h3><a href="#">Custom TTF fonts</a></h3>
+	    <div>
+        <p>
+          Select a TTF file: <input type="file" id="ttf_font" />
+        </p>
+        <textarea rows="20" cols="80" class="code">
+var pdf = new HPDF();
+
+var file = $('#ttf_font')[0].files[0]
+if(file.type !== "application/x-font-ttf")
+  alert('Please select a .ttf file');
+
+var reader = new FileReader();
+reader.onload = function (evt) {
+  var file_contents = evt.target.result;
+
+  var customfont = pdf.loadTtFont(file_contents);
+  var title = "This is a test!";
+  page = pdf.addPage();
+  page.setFontAndSize(customfont, 24);
+  tw = page.textWidth(title);
+  page.beginText();
+  page.moveTextPos( (page.width()-tw)/2, page.height()-50 );
+  page.showText(title);
+  page.endText();
+
+  window.addFile( pdf.toDataUri() );
+
+  pdf.destroy();
+}
+reader.readAsArrayBuffer(file);
+        </textarea>
+      </div>
+
+
+	    <h3><a href="#">Custom remote fonts</a></h3>
+	    <div>
+        <p>
+          Input URL of a TTF file (note same-origin policy!): <input type="text" value="OpenSans-ExtraBoldItalic.ttf" id="ttf_remote_font" />
+        </p>
+        <textarea rows="20" cols="80" class="code">
+var pdf = new HPDF();
+
+var url = $('#ttf_remote_font').val()
+
+var xhr = new XMLHttpRequest();
+xhr.open('GET', url, true);
+xhr.responseType = 'arraybuffer';
+
+xhr.onload = function(e) {
+  var customfont = pdf.loadTtFont(xhr.response);
+  var title = "This is a test!";
+  page = pdf.addPage();
+  page.setFontAndSize(customfont, 24);
+  tw = page.textWidth(title);
+  page.beginText();
+  page.moveTextPos( (page.width()-tw)/2, page.height()-50 );
+  page.showText(title);
+  page.endText();
+
+  window.addFile( pdf.toDataUri() );
+
+  pdf.destroy();
+}
+xhr.send();
+        </textarea>
+      </div>
+
+    </div>
+
+  </body>
+
+  <script type="text/javascript" src="hpdf.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/ui/1.8.23/jquery-ui.min.js"></script>
+
+
+  <script type="text/javascript">
+    var fileCounter = 1;
+    window.addFile = function(href) {
+      var link = $("<li><a href='#'>PDF File "+(fileCounter++)+"</a></li>");
+      link.click(function() { window.open(href); });
+      link.appendTo($('#files')).css("background-color", "red").animate({ backgroundColor: "#FFFFFF"}, 1000);
+    };
+
+    var addDemo = function(url) {
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        $('<h3><a href="#">'+url+'</a></h3>').appendTo( $('#accordion') );
+        var code = $('<textarea rows="20" cols="80" class="code"></textarea')
+        code.val(xhr.response);
+        code.wrapAll('<div></div>');
+        $('#accordion').accordion('destroy').append(code.parent()).accordion();
+      };
+      xhr.open("GET",url,true);
+      xhr.send();
+    }
+
+    $(document).ready(function() {
+      addDemo('font_demo.js');
+      addDemo('line_demo.js');
+
+      $('#exec').click(function() {
+        var code = $('.code:visible').val();
+        try {
+          eval(code);
+        }
+        catch(e) {
+          console.log(e);
+          alert('Execution failed! Check your JS error log. \n'+e);
+        }
+      });
+
+      $("#accordion").accordion();
+    });
+  </script>
+
+</html>
