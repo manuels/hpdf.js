@@ -2,7 +2,13 @@ hpdf.js
 =======
 
 Create PDFs in your browser (port of libharu)
-[See the demo page](https://manuels.github.com/hpdf.js/)
+[See the demo page](http://manuels.github.com/hpdf.js/)
+
+
+Why?
+====
+
+Because current projects with the same goal do not support custom fonts.
 
 
 Dependencies
@@ -14,7 +20,7 @@ None. You just need [emscripten](https://github.com/kripken/emscripten) if you w
 How to use
 ==========
 
-Include `hpdf.js` in your HTML file and [see examples](https://manuels.github.com/hpdf.js/) or [libharu API reference](https://github.com/libharu/libharu/wiki)
+Include `hpdf.js` or `hpdf.min.js` in your HTML file and [see examples](http://manuels.github.com/hpdf.js/) or [libharu API reference](https://github.com/libharu/libharu/wiki)
 
 
 How to compile (for devs)
