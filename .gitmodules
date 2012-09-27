@@ -1,3 +1,9 @@
 [submodule "libharu"]
 	path = libharu
 	url = git://github.com/libharu/libharu.git
+[submodule "libpng"]
+	path = libpng
+	url = git://libpng.git.sourceforge.net/gitroot/libpng/libpng
+[submodule "zlib"]
+	path = zlib
+	url = git://github.com/madler/zlib.git

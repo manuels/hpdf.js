@@ -29,6 +29,9 @@ How to compile (for devs)
 1. Configure libhaku
 ``cmake ./libharu``
 
+1. Configure libpng
+``cmake ./libpng``
+
 2. Compile hpdf.js
 ``./compile.sh``
 (You might want to change some paths in this bash script!)
