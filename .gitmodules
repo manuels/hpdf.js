@@ -1,0 +1,3 @@
+[submodule "libharu"]
+	path = libharu
+	url = git://github.com/libharu/libharu.git
