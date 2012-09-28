@@ -274,6 +274,10 @@ class HPDF
     return new Page(this, page)
 
 
+  setPassword: (owner_passwd, user_passwd) ->
+    ccall(this, 'HPDF_SetPassword', 'number', ['number', 'string', 'string'], [@hpdf, owner_passwd, user_passwd])
+
+
   loadPngImage: (file) ->
     filename = fileify(file)
     image = ccall(this, 'HPDF_LoadPngImageFromFile', 'number', ['number', 'string'], [@hpdf, filename])

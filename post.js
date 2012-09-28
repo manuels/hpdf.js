@@ -338,6 +338,10 @@
       return new Page(this, page);
     };
 
+    HPDF.prototype.setPassword = function(owner_passwd, user_passwd) {
+      return ccall(this, 'HPDF_SetPassword', 'number', ['number', 'string', 'string'], [this.hpdf, owner_passwd, user_passwd]);
+    };
+
     HPDF.prototype.loadPngImage = function(file) {
       var filename, image;
       filename = fileify(file);
