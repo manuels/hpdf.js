@@ -332,7 +332,7 @@
       return ccall(this, 'HPDF_SetCompressionMode', 'number', ['number', 'number'], [this.hpdf, id]);
     };
 
-    HPDF.prototype.getCurrentPage = function() {
+    HPDF.prototype.currentPage = function() {
       var page;
       page = ccall(this, 'HPDF_GetCurrentPage', 'number', ['number'], [this.hpdf]);
       return new Page(this, page);
@@ -342,6 +342,13 @@
       var filename, image;
       filename = fileify(file);
       image = ccall(this, 'HPDF_LoadPngImageFromFile', 'number', ['number', 'string'], [this.hpdf, filename]);
+      return new Image(this, image);
+    };
+
+    HPDF.prototype.loadJpegImage = function(file) {
+      var filename, image;
+      filename = fileify(file);
+      image = ccall(this, 'HPDF_LoadJpegImageFromFile', 'number', ['number', 'string'], [this.hpdf, filename]);
       return new Image(this, image);
     };
 

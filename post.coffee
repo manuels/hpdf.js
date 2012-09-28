@@ -269,7 +269,7 @@ class HPDF
     ccall(this, 'HPDF_SetCompressionMode', 'number', ['number', 'number'], [@hpdf, id])
 
 
-  getCurrentPage: ->
+  currentPage: ->
     page = ccall(this, 'HPDF_GetCurrentPage', 'number', ['number'], [@hpdf])
     return new Page(this, page)
 
@@ -277,6 +277,12 @@ class HPDF
   loadPngImage: (file) ->
     filename = fileify(file)
     image = ccall(this, 'HPDF_LoadPngImageFromFile', 'number', ['number', 'string'], [@hpdf, filename])
+    return new Image(this, image)
+
+
+  loadJpegImage: (file) ->
+    filename = fileify(file)
+    image = ccall(this, 'HPDF_LoadJpegImageFromFile', 'number', ['number', 'string'], [@hpdf, filename])
     return new Image(this, image)
 
 

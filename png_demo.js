@@ -1,5 +1,5 @@
 function draw_image(pdf, filename, x, y, text) {
-    var page = pdf.getCurrentPage();
+    var page = pdf.currentPage();
 
     var image = pdf.loadPngImage(image_contents[filename]);
 

@@ -29,9 +29,3 @@ $EMCC $CFLAGS \
   -I./libpng \
   -I$EMSCRIPTEN/system/include/emscripten main.c --post-js post.js -o hpdf.js
 
-
-#  ./libpng/png.c \
-#  ./libpng/pngr*.c \
-#  ./libpng/pngmem.c \
-#  ./libpng/pngerror.c \
-
