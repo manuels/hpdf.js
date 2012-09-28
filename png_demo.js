@@ -79,7 +79,7 @@ function main() {
   page.beginText();
   page.setFontAndSize(font, 20);
   page.moveTextPos(220, page.height() - 70);
-  paeg.showText("PngDemo");
+  page.showText("PngDemo");
   page.endText();
 
   page.setFontAndSize(font, 12);
