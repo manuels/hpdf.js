@@ -65,11 +65,13 @@ pdf.destroy();
         </textarea>
       </div>
 
-<!--
+
 	    <h3><a href="#">Custom Type1 fonts</a></h3>
 	    <div>
-        <input type="file" id="afm_font" />
-        <input type="file" id="pfm_font" />
+        <p>
+          AFM file: <input type="file" id="afm_font" />
+          PFM file:<input type="file" id="pfm_font" />
+        </p>
         <textarea rows="20" cols="80" class="code">
 var pdf = new HPDF();
 
@@ -109,7 +111,7 @@ reader.onload = function (evt) {
 }
         </textarea>
       </div>
--->
+
 
 	    <h3><a href="#">Custom TTF fonts</a></h3>
 	    <div>
@@ -223,7 +225,7 @@ xhr.send();
       addDemo('grid_sheet.js');
       addDemo('text_annotation.js');
       addDemo('link_annotation.js');
-
+      addDemo('encoding_list.js');
       $('#exec').click(function() {
         var code = $('.code:visible').val();
         try {
