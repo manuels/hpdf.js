@@ -65,10 +65,9 @@ class Page
   currentTextPos: ->
     ptr = Module['allocate']([123,321], 'float', ALLOC_NORMAL)
     ccall(@doc, 'HPDF_Page_GetCurrentTextPos', 'number', ['number','number'], [ptr, @page])
-    console.log ptr
     return {
       x: getValue(ptr, 'float')
-      y: getValue(ptr+FLOAT_SIZE, 'float')&0xffffffff
+      y: getValue(ptr+FLOAT_SIZE, 'float')
     }
 
 
