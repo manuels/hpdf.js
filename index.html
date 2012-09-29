@@ -206,7 +206,7 @@ xhr.send();
         code.wrapAll('<div></div>');
         $('#accordion').accordion('destroy').append(code.parent()).accordion();
       };
-      xhr.open("GET",url,true);
+      xhr.open("GET", 'demo/'+url, true);
       xhr.send();
     }
 
