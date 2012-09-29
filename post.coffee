@@ -386,21 +386,17 @@ class HPDF
     @font(font_name, opts.encoding)
 
 
-  loadType1Font: (afm_contents, pfm_contents, opts) ->
+  loadType1Font: (afm_file, pfm_file, opts) ->
     opts ?= {}
 
-    afm_filename = "afm_file#{fileCounter++}.afm"
-    pfm_filename = "pdf_file#{fileCounter++}.pfm"
+    afm_filename = fileify(afm_file)
 
-    FS.createDataFile('/', afm_filename, afm_contents, true, true)
-    FS.createDataFile('/', pfm_filename, pfm_contents, true, true)
-
-    if not pfm_contents?
-      pfm_filename = null
-
-    font_name = ccall(this, 'HPDF_LoadType1FontFromFile', 'string', ['number', 'string', 'string'], [@hpdf, afm_filename, pfm_filename])
-    
-    @font(font_name, opts.encoding)
+    if not pfm_file?
+      font_name = ccall(this, 'HPDF_LoadType1FontFromFile', 'string', ['number', 'string', 'number'], [@hpdf, afm_filename, 0])
+    else
+      pfm_filename = fileify(pfm_file)
+      font_name = ccall(this, 'HPDF_LoadType1FontFromFile', 'string', ['number', 'string', 'string'], [@hpdf, afm_filename, pfm_filename])
+    return font_name
 
 
   setCompressionMode: (mode) ->
