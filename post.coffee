@@ -24,6 +24,32 @@ class Annotation
   constructor: (@doc, @annot) ->
 
 
+  setBorderStyle: (subtype, width, dash_on, dash_off, dash_phase) ->
+    switch subtype.toLowerCase()[0]
+      when 's' then 0 # HPDF_BS_SOLID 
+      when 'd' then 1 # HPDF_BS_DASHED 
+      when 'b' then 2 # HPDF_BS_BEVELED
+      when 'i' then 3 # HPDF_BS_INSET
+      when 'u' then 4 # HPDF_BS_UNDERLINED
+    ccall(@doc, 'HPDF_Annot_SetBorderStyle', 'number', ['number','number','number','number','number','number'], [@annot, id, width, dash_on, dash_off, dash_phase])    
+
+
+
+class LinkAnnotation extends Annotation
+  setHighlightMode: (mode) ->
+    id = 0
+    switch mode.toUpperCase()
+      when 'NO_HIGHTLIGHT'   then id = 0 # HPDF_ANNOT_NO_HIGHTLIGHT
+      when 'INVERT_BOX'      then id = 1 # HPDF_ANNOT_INVERT_BOX
+      when 'INVERT_BORDER'   then id = 2 # HPDF_ANNOT_INVERT_BORDER
+      when 'DOWN_APPEARANCE' then id = 3 # HPDF_ANNOT_DOWN_APPEARANCE
+    ccall(@doc, 'HPDF_LinkAnnot_SetHighlightMode', 'number', ['number'], [@annot, id])    
+
+
+  setBorderStyle: (width, dash_on, dash_off) ->
+    ccall(@doc, 'HPDF_LinkAnnot_SetBorderStyle', 'number', ['number','number','number','number'], [@annot, width, dash_on, dash_off])    
+
+
 
 class TextAnnotation extends Annotation
   setIcon: (icon) ->
@@ -114,6 +140,20 @@ class Page
     new TextAnnotation(@doc, ret)
 
 
+  createURILinkAnnot: (rect, uri) ->
+    if rect not instanceof Array
+      rect = [rect.left, rect.bottom, rect.right, rect.top]
+    ret = ccall(@doc, 'HPDF_Page_CreateURILinkAnnot', 'number', ['number', 'number','number','number','number', 'string'], [@page, rect[0], rect[1], rect[2], rect[3], uri])
+    new Annotation(@doc, ret)
+
+
+  createLinkAnnot: (rect, dst) ->
+    if rect not instanceof Array
+      rect = [rect.left, rect.bottom, rect.right, rect.top]
+    ret = ccall(@doc, 'HPDF_Page_CreateLinkAnnot', 'number', ['number', 'number','number','number','number', 'number'], [@page, rect[0], rect[1], rect[2], rect[3], dst.dst])
+    new LinkAnnotation(@doc, ret)
+
+
   setSize: (size, orientation) ->
     switch size.toLowerCase()
       when 'letter' then s = HPDF_PAGE_SIZE_LETTER
@@ -181,7 +221,7 @@ class Page
 
 
   moveTextPos: (x,y) ->
-    ccall(@doc, 'HPDF_Page_MoveTextPos', 'number', ['number'], [@page, x, y])
+    ccall(@doc, 'HPDF_Page_MoveTextPos', 'number', ['number','number','number'], [@page, x, y])
 
           
   showText: (text) ->
@@ -194,6 +234,10 @@ class Page
 
   moveTo: (x,y) ->
     ccall(@doc, 'HPDF_Page_MoveTo', 'number', ['number','number','number'], [@page,x,y])
+
+
+  moveToNextLine: ->
+    ccall(@doc, 'HPDF_Page_MoveToNextLine', 'number', ['number'], [@page])
           
 
   setRGBStroke: (r,g,b) ->
