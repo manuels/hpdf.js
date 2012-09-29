@@ -119,8 +119,17 @@ class Page
     ccall(@doc, 'HPDF_Page_SetGrayStroke', 'number', ['number', 'number'], [@page, stroke])
 
 
+  currentPos: ->
+    ptr = Module['allocate']([0,0], 'float', ALLOC_NORMAL)
+    ccall(@doc, 'HPDF_Page_GetCurrentPos', 'number', ['number','number'], [ptr, @page])
+    return {
+      x: getValue(ptr, 'float')
+      y: getValue(ptr+FLOAT_SIZE, 'float')
+    }
+
+
   currentTextPos: ->
-    ptr = Module['allocate']([123,321], 'float', ALLOC_NORMAL)
+    ptr = Module['allocate']([0,0], 'float', ALLOC_NORMAL)
     ccall(@doc, 'HPDF_Page_GetCurrentTextPos', 'number', ['number','number'], [ptr, @page])
     return {
       x: getValue(ptr, 'float')
@@ -322,6 +331,17 @@ class Page
   endText: ->
     ccall(@doc, 'HPDF_Page_EndText', 'number', ['number'], [@page])
 
+
+  setFillRGB: (r,g,b) ->
+    ccall(@doc, 'HPDF_Page_SetFillRGB', 'number', ['number','number','number','number'], [@page,r,g,b])
+
+
+  arc: (x,y,ray,arc1,arc2) ->
+    ccall(@doc, 'HPDF_Page_Arc', 'number', ['number','number','number','number','number','number'], [@page,x,y,ray,arc1,arc2])
+
+
+  circle: (x,y,ray) ->
+    ccall(@doc, 'HPDF_Page_Circle', 'number', ['number','number','number','number'], [@page,x,y,ray])
 
 
 
