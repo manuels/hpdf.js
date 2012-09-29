@@ -20,6 +20,29 @@ class Encoder
 
 
 
+class Annotation
+  constructor: (@doc, @annot) ->
+
+
+
+class TextAnnotation extends Annotation
+  setIcon: (icon) ->
+    id = 0
+    switch icon.toLowerCase()[0]
+      when 'c' then id = 0 # HPDF_ANNOT_ICON_COMMENT
+      when 'k' then id = 1 # HPDF_ANNOT_ICON_KEY
+      when 'n' then id = 2 # HPDF_ANNOT_ICON_NOTE
+      when 'h' then id = 3 # HPDF_ANNOT_ICON_HELP
+      when 'n' then id = 4 # HPDF_ANNOT_ICON_NEW_PARAGRAPH
+      when 'p' then id = 5 # HPDF_ANNOT_ICON_PARAGRAPH
+      when 'i' then id = 6 # HPDF_ANNOT_ICON_INSERT
+    ccall(@doc, 'HPDF_TextAnnot_SetIcon', 'number', ['number'], [@annot, id])    
+
+
+  setOpened: (opened) ->
+    ccall(@doc, 'HPDF_TextAnnot_SetOpened', 'number', ['number'], [@annot, if opened then 1 else 0])    
+
+
 class Outline
   constructor: (@doc, @outline) ->
 
@@ -82,6 +105,13 @@ class Page
   createDestination: ->
     ret = ccall(@doc, 'HPDF_Page_CreateDestination', 'number', ['number'], [@page])
     new Destination(@doc, ret)
+
+
+  createTextAnnot: (rect, text, encoder) ->
+    if rect not instanceof Array
+      rect = [rect.left, rect.bottom, rect.right, rect.top]
+    ret = ccall(@doc, 'HPDF_Page_CreateTextAnnot', 'number', ['number', 'number','number','number','number', 'string', 'number'], [@page, rect[0], rect[1], rect[2], rect[3], text, encoder?.encoder])
+    new TextAnnotation(@doc, ret)
 
 
   setSize: (size, orientation) ->
@@ -266,6 +296,11 @@ class HPDF
   font: (name, encoding) ->
     ret = ccall(this, 'HPDF_GetFont', 'number', ['number', 'string', 'string'], [@hpdf, name, encoding])
     new Font(this, ret)
+
+
+  encoder: (name) ->
+    ret = ccall(this, 'HPDF_GetEncoder', 'number', ['number', 'string'], [@hpdf, name])
+    new Encoder(this, ret)
 
 
   toArrayBuffer: ->
