@@ -62,6 +62,14 @@ class Page
     ccall(@doc, 'HPDF_Page_SetFontAndSize', 'number', ['number', 'number', 'number'], [@page, font.font, size])
 
 
+  setGrayFill: (grayness) ->
+    ccall(@doc, 'HPDF_Page_SetGrayFill', 'number', ['number', 'number'], [@page, grayness])
+
+
+  setGrayStroke: (stroke) ->
+    ccall(@doc, 'HPDF_Page_SetGrayStroke', 'number', ['number', 'number'], [@page, stroke])
+
+
   currentTextPos: ->
     ptr = Module['allocate']([123,321], 'float', ALLOC_NORMAL)
     ccall(@doc, 'HPDF_Page_GetCurrentTextPos', 'number', ['number','number'], [ptr, @page])
@@ -128,6 +136,10 @@ class Page
 
   setLineWidth: (w) ->
     ccall(@doc, 'HPDF_Page_SetLineWidth', 'number', ['number', 'number'], [@page, w])
+
+
+  getLineWidth: ->
+    ccall(@doc, 'HPDF_Page_GetLineWidth', 'number', ['number'], [@page])
 
 
   rectangle: (x1,y1,x2,y2) ->
