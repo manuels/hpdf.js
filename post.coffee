@@ -2,10 +2,35 @@ Module ?= []
 
 fileCounter = 0
 
+FLOAT_SIZE = 4
+
 HPDF = {}
 
 class Font
   constructor: (@doc, @font) ->
+
+
+  fontName: ->
+    ccall(@doc, 'HPDF_Font_GetFontName', 'string', ['number'], [@font])
+
+
+
+class Encoder
+  constructor: (@doc, @encoder) ->
+
+
+
+class Outline
+  constructor: (@doc, @outline) ->
+
+
+  setDestination: (dst) ->
+    ccall(@doc, 'HPDF_Outline_SetDestination', 'number', ['number', 'number'], [@outline, dst.dst])
+
+
+  setOpened: (is_open) ->
+    ccall(@doc, 'HPDF_Outline_SetOpened', 'number', ['number', 'number'], [@outline, if is_open then 1 else 0])
+
 
 
 class Destination
@@ -35,6 +60,16 @@ class Page
 
   setFontAndSize: (font, size) ->
     ccall(@doc, 'HPDF_Page_SetFontAndSize', 'number', ['number', 'number', 'number'], [@page, font.font, size])
+
+
+  currentTextPos: ->
+    ptr = Module['allocate']([123,321], 'float', ALLOC_NORMAL)
+    ccall(@doc, 'HPDF_Page_GetCurrentTextPos', 'number', ['number','number'], [ptr, @page])
+    console.log ptr
+    return {
+      x: getValue(ptr, 'float')
+      y: getValue(ptr+FLOAT_SIZE, 'float')&0xffffffff
+    }
 
 
   createDestination: ->
@@ -300,9 +335,31 @@ class HPDF
     ccall(this, 'HPDF_SetOpenAction', 'number', ['number', 'number'], [@hpdf, dst.dst])
 
 
+  useJPEncodings: ->
+    ccall(this, 'HPDF_UseJPEncodings', 'number', ['number'], [@hpdf])
+
+
+  useJPFonts: ->
+    ccall(this, 'HPDF_UseJPFonts', 'number', ['number'], [@hpdf])
+
+
+  setPageMode: (mode) ->
+    switch mode.toLowerCase()[0]
+      when 'n' then id = 0 # HPDF_PAGE_MODE_USE_NONE
+      when 'o' then id = 1 # HPDF_PAGE_MODE_USE_OUTLINE
+      when 't' then id = 2 # HPDF_PAGE_MODE_USE_THUMBS
+      when 'f' then id = 3 # HPDF_PAGE_MODE_USE_FULL_SCREEN
+    ccall(this, 'HPDF_SetPageMode', 'number', ['number', 'number'], [@hpdf, id])
+
+
   addPage: ->
     ret = ccall(this, 'HPDF_AddPage', 'number', ['number'], [@hpdf])
     return new Page(this, ret)
+
+
+  createOutline: (parent, title, encoder) ->
+    ret = ccall(this, 'HPDF_CreateOutline', 'number', ['number', 'number', 'string', 'number'], [@hpdf, parent, title, encoder?.encoder])
+    return new Outline(this, ret)
 
 
 fileify = (file) ->
