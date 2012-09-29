@@ -409,6 +409,19 @@ class HPDF
     return new Image(this, image)
 
 
+  loadRawImage: (file, width, height, color_space) ->
+    filename = fileify(file)
+
+    id = 0
+    switch color_space.toLowerCase()[0]
+      when 'g' then id = 0 # HPDF_CS_DEVICE_GRAY
+      when 'r' then id = 1 # HPDF_CS_DEVICE_RGB
+      when 'c' then id = 2 # HPDF_CS_DEVICE_CMYK
+
+    image = ccall(this, 'HPDF_LoadRawImageFromFile', 'number', ['number', 'string', 'number', 'number', 'number'], [@hpdf, filename, width, height, id])
+    return new Image(this, image)
+
+
   loadJpegImage: (file) ->
     filename = fileify(file)
     image = ccall(this, 'HPDF_LoadJpegImageFromFile', 'number', ['number', 'string'], [@hpdf, filename])
