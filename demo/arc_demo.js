@@ -177,4 +177,4 @@ console.log(12);
 
 window.addFile( pdf.toDataUri() )
 
-pdf.destroy()
+pdf.free()

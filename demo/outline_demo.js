@@ -61,5 +61,5 @@ outline[2].setDestination(dst);
 
 window.addFile( pdf.toDataUri() )
 
-pdf.destroy()
+pdf.free()
 

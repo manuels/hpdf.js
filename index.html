@@ -38,7 +38,7 @@ page.endText();
 
 window.addFile( pdf.toDataUri() );
 
-pdf.destroy();
+pdf.free();
         </textarea>
       </div>
 
@@ -61,7 +61,7 @@ page.endText();
 
 window.addFile( pdf.toDataUri() );
 
-pdf.destroy();
+pdf.free();
         </textarea>
       </div>
 
@@ -107,7 +107,7 @@ reader.onload = function (evt) {
 
     window.addFile( pdf.toDataUri() );
 
-    pdf.destroy();
+    pdf.free();
   }
 }
         </textarea>
@@ -143,7 +143,7 @@ reader.onload = function (evt) {
 
   window.addFile( pdf.toDataUri() );
 
-  pdf.destroy();
+  pdf.free();
 }
 reader.readAsArrayBuffer(file);
         </textarea>
@@ -177,7 +177,7 @@ xhr.onload = function(e) {
 
   window.addFile( pdf.toDataUri() );
 
-  pdf.destroy();
+  pdf.free();
 }
 xhr.send();
         </textarea>

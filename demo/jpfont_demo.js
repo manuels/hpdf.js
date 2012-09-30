@@ -115,7 +115,7 @@ function main(response) {
 
   window.addFile( pdf.toDataUri() )
 
-  pdf.destroy()
+  pdf.free()
 }
 
 var xhr = new XMLHttpRequest();

@@ -25,5 +25,5 @@ pdf.setPassword(owner_password, user_password);
 
 window.addFile( pdf.toDataUri() )
 
-pdf.destroy()
+pdf.free()
 
