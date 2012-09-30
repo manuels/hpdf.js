@@ -353,7 +353,7 @@ class HPDF
       throw 'Error calling HPDF_New'
 
 
-  destroy: ->
+  free: ->
     Module['ccall']('HPDF_Free', 'void', ['number'], [@hpdf])
 
 
