@@ -1,7 +1,17 @@
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
+
+
 function draw_image(pdf, filename, x, y, text) {
     var page = pdf.currentPage();
 
-    var image = pdf.loadPngImage(image_contents[filename]);
+    console.log(filename, resources[filename]);
+    var image = pdf.loadPngImage(resources[filename]);
 
     /* Draw image to the canvas. */
     page.drawImage(image, x, y, image.width(), image.height());
@@ -13,48 +23,6 @@ function draw_image(pdf, filename, x, y, text) {
     page.showTextNextLine(filename);
     page.showTextNextLine(text);
     page.endText();
-}
-
-
-var images = [
-  "basn0g01.png",
-  "basn0g02.png",
-  "basn0g04.png",
-  "basn0g08.png",
-  "basn2c08.png",
-  "basn2c16.png",
-  "basn3p01.png",
-  "basn3p02.png",
-  "basn3p04.png",
-  "basn3p08.png",
-  "basn4a08.png",
-  "basn4a16.png",
-  "basn6a08.png",
-  "basn6a16.png"
-];
-
-
-var loaded = 0;
-var image_contents = {};
-function callMainWhenAllLoaded(url, array) {
-  image_contents[url] = array;
-  loaded++;
-
-  if(loaded === images.length)
-    main();
-}
-
-
-for(var i = 0; i < images.length; i++) {
-  var url = images[i];
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'pngsuite/'+url, true);
-  xhr.responseType = 'arraybuffer';
-
-  xhr.onload = (function(xhr, url) {
-     return function() { callMainWhenAllLoaded(url, xhr.response); }
-  })(xhr, url);
-  xhr.send()
 }
 
 
@@ -118,8 +86,61 @@ function main() {
   draw_image(pdf, "basn6a16.png", 200, page.height() - 550,
               "16bit alpha.");
 
-  window.addFile( pdf.toDataUri() )
+  return pdf;
+}
 
+var path = 'demo/pngsuite/';
+var resources = {
+  "basn0g01.png": undefined,
+  "basn0g02.png": undefined,
+  "basn0g04.png": undefined,
+  "basn0g08.png": undefined,
+  "basn2c08.png": undefined,
+  "basn2c16.png": undefined,
+  "basn3p01.png": undefined,
+  "basn3p02.png": undefined,
+  "basn3p04.png": undefined,
+  "basn3p08.png": undefined,
+  "basn4a08.png": undefined,
+  "basn4a16.png": undefined,
+  "basn6a08.png": undefined,
+  "basn6a16.png": undefined
+};
+
+if(env === 'browser') {
+  // this code is called in the browser
+
+  var loaded = 0;
+  for(var url in resources) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', path+url, true);
+    xhr.responseType = 'arraybuffer';
+
+    xhr.onload = (function(url) {
+      return function(ev) {
+        loaded++;
+        resources[url] = ev.target.response;
+        if(loaded == Object.keys(resources).length) {
+          pdf = main();
+          window.open( pdf.toDataUri() )
+          pdf.free()
+        }
+      }
+    })(url);
+    xhr.send();
+  }
+}
+else {
+  // this code is called in nodejs
+  for(var url in resources)
+    resources[url] = path+url;
+
+  var pdf = main();
+
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
   pdf.free()
 }
+  
 

@@ -1,3 +1,12 @@
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
+
+
 var draw_line = function(page, x, y, label) {
   page.beginText()
   page.moveTextPos(x, y - 10);
@@ -277,8 +286,15 @@ page.moveTo(x, y);
 page.curveTo(x1, y1, x2, y2, x3, y3);
 page.stroke();
 
-/* save the document to a file */
-window.addFile( pdf.toDataUri() )
+if(env === 'browser')
+  // this code is called in the browser
+  window.open( pdf.toDataUri() )
+else {
+  // this code is called in nodejs
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
+}
 
 /* clean up */
 pdf.free();

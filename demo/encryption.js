@@ -1,3 +1,12 @@
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
+
+
 var text = "This is an encrypt document example.";
 
 var owner_password = "owner";
@@ -23,7 +32,13 @@ page.endText();
 
 pdf.setPassword(owner_password, user_password);
 
-window.addFile( pdf.toDataUri() )
+if(env==='browser')
+  window.open( pdf.toDataUri() )
+else {
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
+}
 
 pdf.free()
 

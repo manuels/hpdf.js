@@ -1,3 +1,12 @@
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
+
+
 function draw_circles(page, description, x, y) {
   page.setLineWidth(1.0);
   page.setRGBStroke(0.0, 0.0, 0.0);
@@ -146,7 +155,13 @@ draw_circles(page, "HPDF_BM_EXCLUSHON", 230.0, PAGE_HEIGHT - 850);
 page.gRestore()
 
 
-window.addFile( pdf.toDataUri() )
+if(env==='browser')
+  window.open( pdf.toDataUri() )
+else {
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
+}
 
 pdf.free()
 

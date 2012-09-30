@@ -1,3 +1,12 @@
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
+
+
 // [ left, bottom, right, top ]
 var rect1 = [50, 350, 150, 400];
 var rect2 = [210, 350, 350, 400];
@@ -102,7 +111,15 @@ page.showText("Text Icon(ISO8859-2 text)");
 page.endText();
 
 
-window.addFile( pdf.toDataUri() )
+if(env === 'browser')
+  // this code is called in the browser
+  window.open( pdf.toDataUri() )
+else {
+  // this code is called in nodejs
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
+}
 
 pdf.free()
 

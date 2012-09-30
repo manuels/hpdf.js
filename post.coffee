@@ -1,5 +1,7 @@
 Module ?= []
 
+env = if window? then 'browser' else 'nodejs'
+
 fileCounter = 0
 
 FLOAT_SIZE = 4
@@ -418,6 +420,18 @@ class HPDF
     FS.analyzePath(filename).object.contents
 
 
+  # convert to nodejs' Buffer
+  toBuffer: ->
+    new Buffer(new Uint8Array(@toArrayBuffer()))
+
+
+  saveToFile: (file_name) ->
+    if env != 'nodejs'
+      throw 'saveToFile() is only supported for NodeJS and not for browsers'
+    fs = require('fs')
+    fs.writeFileSync(file_name, @toBuffer())
+
+
   loadTTFont: (file, opts) ->
     embed_flag = 1 # true
     opts ?= {}
@@ -531,11 +545,16 @@ fileify = (file) ->
     filename = "file#{fileCounter++}"
     FS.createDataFile('/', filename, new Uint8Array(file), true, true)
 
-  if file instanceof String
-    filename = file
-    throw 'Filenames will only be supported for node.js (not done yet)!'
-    # TODO: create emscripten fake file for real file
-  filename
+  if typeof file == 'string'
+    if env!='nodejs'
+      throw 'Filenames are only be supported for nodejs'
+    real_fs = require('fs')
+    contents = real_fs.readFileSync(file)
+
+    filename = "file#{fileCounter++}"
+    FS.createDataFile('/', filename, contents, true, true)
+
+  return filename
 
 
 ccall = (args...) ->

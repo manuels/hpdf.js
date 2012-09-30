@@ -1,3 +1,12 @@
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
+
+
 function print_grid(pdf, page) {
   var height = page.height();
   var width = page.width();
@@ -114,7 +123,13 @@ page.setWidth(400);
 print_grid(pdf, page);
 
 
-window.addFile( pdf.toDataUri() )
+if(env === 'nodejs') {
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
+}
+else
+  window.open( pdf.toDataUri() )
 
 pdf.free()
 

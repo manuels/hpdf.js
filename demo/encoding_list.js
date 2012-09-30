@@ -1,3 +1,16 @@
+/*********************************************************
+ ** WARNING: this examples takes a long time to execute **
+ *********************************************************/
+
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
+
+
 var PAGE_WIDTH = 420;
 var PAGE_HEIGHT = 400;
 var CELL_WIDTH = 20;
@@ -94,11 +107,6 @@ var encodings = [
   false
 ];
 
-var resources = {
-  "type1/a010013l.afm": undefined,
-  "type1/a010013l.pfb": undefined
-}
-
 
 function main() {
   var pdf = new HPDF();
@@ -112,8 +120,8 @@ function main() {
   /* get default font */
   var font = pdf.font("Helvetica");
 
-  var font_name = pdf.loadType1Font(resources["type1/a010013l.afm"],
-          resources["type1/a010013l.pfb"]);
+  var font_name = pdf.loadType1Font(resources["demo/type1/a010013l.afm"],
+          resources["demo/type1/a010013l.pfb"]);
 
   /* create outline root. */
   var root = pdf.createOutline(undefined, "Encoding list");
@@ -156,27 +164,48 @@ function main() {
     i++;
   }
 
+  return pdf;
+}
 
-  window.addFile( pdf.toDataUri() )
+var resources = {
+  "demo/type1/a010013l.afm": undefined,
+  "demo/type1/a010013l.pfb": undefined
+}
 
+
+if(env === 'browser') {
+  // this code is called in the browser
+
+  var loaded = 0;
+  for(var url in resources) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+
+    xhr.onload = (function(url) {
+      return function(ev) {
+        loaded++;
+        resources[url] = ev.target.response;
+        if(loaded == Object.keys(resources).length) {
+          pdf = main();
+          window.open( pdf.toDataUri() )
+          pdf.free()
+        }
+      }
+    })(url);
+    xhr.send();
+  }
+}
+else {
+  // this code is called in nodejs
+  for(var url in resources)
+    resources[url] = url;
+
+  var pdf = main();
+
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
   pdf.free()
 }
-
-var loaded = 0;
-for(var url in resources) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'demo/'+url, true);
-  xhr.responseType = 'arraybuffer';
-
-  xhr.onload = (function(url) {
-    return function(ev) {
-      loaded++;
-      resources[url] = ev.target.response;
-      if(loaded == Object.keys(resources).length)
-        main();
-    }
-  })(url);
-  xhr.send()
-}
-
-
+  
