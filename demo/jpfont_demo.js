@@ -1,7 +1,15 @@
-var PAGE_HEIGHT = 210;
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
 
-function main(response) {
-  var samp_text = this.responseText;
+
+var PAGE_HEIGHT = 210;
+function main() {
+  var samp_text = resources["demo/mbtext/sjis.txt"];
 
   var pdf = new HPDF();
 
@@ -113,14 +121,47 @@ function main(response) {
       page.stroke()
   }
 
-  window.addFile( pdf.toDataUri() )
-
-  pdf.free()
+  return pdf;
 }
 
-var xhr = new XMLHttpRequest();
-xhr.open('GET', 'demo/mbtext/sjis.txt', true);
-xhr.responseType = 'text';
-xhr.onload = main;
-xhr.send();
+var resources = {
+  "demo/mbtext/sjis.txt": undefined
+}
+
+
+if(env === 'browser') {
+  // this code is called in the browser
+
+  var loaded = 0;
+  for(var url in resources) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+
+    xhr.onload = (function(url) {
+      return function(ev) {
+        loaded++;
+        resources[url] = ev.target.response;
+        if(loaded == Object.keys(resources).length) {
+          pdf = main();
+          window.open( pdf.toDataUri() )
+          pdf.free()
+        }
+      }
+    })(url);
+    xhr.send();
+  }
+}
+else {
+  // this code is called in nodejs
+  for(var url in resources)
+    resources[url] = url;
+
+  var pdf = main();
+
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
+  pdf.free()
+}
 

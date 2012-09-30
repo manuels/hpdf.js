@@ -1,3 +1,12 @@
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
+
+
 var image = [
     0xff, 0xff, 0xff, 0xfe, 0xff, 0xff, 0xff, 0xfc,
     0xff, 0xff, 0xff, 0xf8, 0xff, 0xff, 0xff, 0xf0,
@@ -24,11 +33,6 @@ for (var i = 0; i < bytes.length; i++) {
 }
 
 
-var image_data = {
-  'rawimage/32_32_gray.dat': undefined,
-  'rawimage/32_32_rgb.dat': undefined
-};
-
 function main() {
   var pdf = new HPDF();
 
@@ -50,7 +54,7 @@ function main() {
   page.endText();
 
   /* load RGB raw-image file. */
-  image = pdf.loadRawImage(image_data['rawimage/32_32_rgb.dat'],
+  image = pdf.loadRawImage(resources['demo/rawimage/32_32_rgb.dat'],
           32, 32, 'RGB');
 
   var x = 20;
@@ -60,7 +64,7 @@ function main() {
   page.drawImage(image, x, y, 32, 32);
 
   /* load GrayScale raw-image file. */
-  image = pdf.loadRawImage(image_data["rawimage/32_32_gray.dat"],
+  image = pdf.loadRawImage(resources["demo/rawimage/32_32_gray.dat"],
           32, 32, 'GRAY');
 
   x = 70;
@@ -80,25 +84,48 @@ function main() {
   /* Draw image to the canvas. (normal-mode with actual size.)*/
   page.drawImage(image, x, y, 32, 32);
 
-  window.addFile( pdf.toDataUri() )
-
-  pdf.free()
+  return pdf;
 }
 
-var loaded = 0;
-for(var url in image_data) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'demo/'+url, true);
-  xhr.responseType = 'arraybuffer';
+var resources = {
+  'demo/rawimage/32_32_gray.dat': undefined,
+  'demo/rawimage/32_32_rgb.dat': undefined
+};
 
-  xhr.onload = (function(url) {
-    return function(ev) {
-      loaded++;
-      image_data[url] = ev.target.response;
-      if(loaded == Object.keys(image_data).length)
-        main();
-    }
-  })(url);
-  xhr.send()
+
+if(env === 'browser') {
+  // this code is called in the browser
+
+  var loaded = 0;
+  for(var url in resources) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+
+    xhr.onload = (function(url) {
+      return function(ev) {
+        loaded++;
+        resources[url] = ev.target.response;
+        if(loaded == Object.keys(resources).length) {
+          pdf = main();
+          window.open( pdf.toDataUri() );
+          pdf.free()
+        }
+      }
+    })(url);
+    xhr.send();
+  }
+}
+else {
+  // this code is called in nodejs
+  for(var url in resources)
+    resources[url] = url;
+
+  var pdf = main();
+
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
+  pdf.free()
 }
 

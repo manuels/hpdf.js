@@ -1,7 +1,16 @@
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
+
+
 function draw_image(pdf, filename, x, y, text) {
   var page = pdf.currentPage();
 
-  var image = pdf.loadJpegImage(image_contents[filename]);
+  var image = pdf.loadJpegImage(resources[filename]);
 
   page.drawImage(image, x, y, image.width(), image.height());
 
@@ -23,22 +32,6 @@ function callMainWhenAllLoaded(url, array) {
   if(loaded === images.length)
     main();
 }
-
-var images = ['rgb.jpg', 'gray.jpg'];
-
-// load images and call main() function when finished loading
-for(var i = 0; i < images.length; i++) {
-  var url = images[i];
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'images/'+url, true);
-  xhr.responseType = 'arraybuffer';
-
-  xhr.onload = (function(xhr, url) {
-     return function() { callMainWhenAllLoaded(url, xhr.response); }
-  })(xhr, url);
-  xhr.send()
-}
-
 
 function main() {
   var pdf = new HPDF();
@@ -65,12 +58,52 @@ function main() {
 
   page.setFontAndSize(font, 12);
 
-  draw_image (pdf, "rgb.jpg", 70, page.height() - 410,
+  draw_image (pdf, "demo/images/rgb.jpg", 70, page.height() - 410,
               "24bit color image");
-  draw_image (pdf, "gray.jpg", 340, page.height() - 410,
+  draw_image (pdf, "demo/images/gray.jpg", 340, page.height() - 410,
               "8bit grayscale image");
+  return pdf;
+}
 
-  window.addFile( pdf.toDataUri() )
+var resources = {
+  "demo/images/rgb.jpg": undefined,
+  "demo/images/gray.jpg": undefined
+}
 
+
+if(env === 'browser') {
+  // this code is called in the browser
+
+  var loaded = 0;
+  for(var url in resources) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+
+    xhr.onload = (function(url) {
+      return function(ev) {
+        loaded++;
+        resources[url] = ev.target.response;
+        if(loaded == Object.keys(resources).length) {
+          pdf = main();
+          window.open( pdf.toDataUri() )
+          pdf.free()
+        }
+      }
+    })(url);
+    xhr.send();
+  }
+}
+else {
+  // this code is called in nodejs
+  for(var url in resources)
+    resources[url] = url;
+
+  var pdf = main();
+
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
   pdf.free()
 }
+

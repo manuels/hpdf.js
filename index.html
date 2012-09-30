@@ -14,10 +14,7 @@
   </head>
 
   <body>
-    <ul id="files">
-    </ul>
     <p>I suggest to use Chrome or Firefox for these examples for performance reasons!</p>
-    <input type="button" id="exec" value="Execute example code" style="height: 3em" />
 
     <div id="accordion">
   	  <h3><a href="#">Simpe Text</a></h3>
@@ -36,7 +33,7 @@ page.moveTextPos( (page.width()-tw)/2, page.height()-50 );
 page.showText(title);
 page.endText();
 
-window.addFile( pdf.toDataUri() );
+window.open( pdf.toDataUri() );
 
 pdf.free();
         </textarea>
@@ -59,7 +56,7 @@ page.moveTextPos( (page.width()-tw)/2, page.height()-50 );
 page.showText(title);
 page.endText();
 
-window.addFile( pdf.toDataUri() );
+window.open( pdf.toDataUri() );
 
 pdf.free();
         </textarea>
@@ -105,7 +102,7 @@ reader.onload = function (evt) {
     page.showText(title);
     page.endText();
 
-    window.addFile( pdf.toDataUri() );
+    window.open( pdf.toDataUri() );
 
     pdf.free();
   }
@@ -141,7 +138,7 @@ reader.onload = function (evt) {
   page.showText(title);
   page.endText();
 
-  window.addFile( pdf.toDataUri() );
+  window.open( pdf.toDataUri() );
 
   pdf.free();
 }
@@ -175,7 +172,7 @@ xhr.onload = function(e) {
   page.showText(title);
   page.endText();
 
-  window.addFile( pdf.toDataUri() );
+  window.open( pdf.toDataUri() );
 
   pdf.free();
 }
@@ -194,12 +191,16 @@ xhr.send();
 
 
   <script type="text/javascript">
-    var fileCounter = 1;
-    window.addFile = function(href) {
-      var link = $("<li><a href='#'>PDF File "+(fileCounter++)+"</a></li>");
-      link.click(function() { window.open(href); });
-      link.appendTo($('#files')).css("background-color", "red").animate({ backgroundColor: "#FFFFFF"}, 1000);
-    };
+    function execCode() {
+      var code = $('.code:visible').val();
+      try {
+        eval(code);
+      }
+      catch(e) {
+        console.log(e);
+        alert('Execution failed! Check your JS error log. \n'+e);
+      }
+    }
 
     var addDemo = function(url) {
       var xhr = new XMLHttpRequest();
@@ -209,6 +210,16 @@ xhr.send();
         code.val(xhr.response);
         code.wrapAll('<div></div>');
         $('#accordion').accordion('destroy').append(code.parent()).accordion();
+
+        $('#accordion > div').each(function() {
+          var tab = $(this);
+          if(tab.find('input[type=button]').length == 0) {
+            var btn = $('<input type="button" id="exec" value="Execute example code" style="height: 3em" /><br />');
+
+            btn.click(execCode); 
+            btn.prependTo(tab);
+          }
+        });
       };
       xhr.open("GET", 'demo/'+url, true);
       xhr.send();
@@ -229,16 +240,6 @@ xhr.send();
       addDemo('text_annotation.js');
       addDemo('link_annotation.js');
       addDemo('encoding_list.js');
-      $('#exec').click(function() {
-        var code = $('.code:visible').val();
-        try {
-          eval(code);
-        }
-        catch(e) {
-          console.log(e);
-          alert('Execution failed! Check your JS error log. \n'+e);
-        }
-      });
 
       $("#accordion").accordion();
     });

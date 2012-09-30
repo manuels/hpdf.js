@@ -1,3 +1,12 @@
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
+
+
 function print_grid(pdf, page) {
   var height = page.height();
   var width = page.width();
@@ -122,21 +131,13 @@ print_grid(pdf, page);
  */
 
 /* A */
-console.log(1);
 page.setRGBFill(1.0, 0, 0);
-console.log(2);
 page.moveTo(100, 100);
-console.log(3);
 page.lineTo(100, 180);
-console.log(4);
 page.arc(100, 100, 80, 0, 360 * 0.45);
-console.log(5);
 pos = page.currentPos();
-console.log(6);
 page.lineTo(100, 100);
-console.log(7);
 page.fill();
-console.log(8);
 
 /* B */
 page.setRGBFill(0, 0, 1.0);
@@ -146,7 +147,6 @@ page.arc(100, 100, 80, 360 * 0.45, 360 * 0.7);
 pos = page.currentPos();
 page.lineTo(100, 100);
 page.fill();
-console.log(9);
 
 /* C */
 page.setRGBFill(0, 1.0, 0);
@@ -156,7 +156,6 @@ page.arc(100, 100, 80, 360 * 0.7, 360 * 0.85);
 pos = page.currentPos();
 page.lineTo(100, 100);
 page.fill();
-console.log(10);
 
 /* D */
 page.setRGBFill(1.0, 1.0, 0);
@@ -166,15 +165,23 @@ page.arc(100, 100, 80, 360 * 0.85, 360);
 pos = page.currentPos();
 page.lineTo(100, 100);
 page.fill();
-console.log(11);
 
 /* draw center circle */
 page.setGrayStroke(0);
 page.setGrayFill(1);
 page.circle(100, 100, 30);
 page.fill();
-console.log(12);
 
-window.addFile( pdf.toDataUri() )
 
+if(env === 'browser')
+  // this code is called in the browser
+  window.open( pdf.toDataUri() )
+else {
+  // this code is called in nodejs
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
+}
+  
 pdf.free()
+

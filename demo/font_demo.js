@@ -1,3 +1,12 @@
+var env;
+if(typeof window === 'undefined') {
+  env = 'nodejs';
+  HPDF = require('../hpdf.js').HPDF;
+}
+else
+  env = 'browser';
+
+
 font_list = [
     "Courier",
     "Courier-Bold",
@@ -67,7 +76,14 @@ while(font_list[i]) {
 
 page.endText()
 
-window.addFile( pdf.toDataUri() )
 
+if(env === 'nodejs') {
+  var filename = '/tmp/'+Math.round(Math.random()*1e10)+'.pdf'
+  pdf.saveToFile(filename);
+  console.log('Result written to '+filename);
+}
+else
+  window.open( pdf.toDataUri() )
+  
 pdf.free()
 
