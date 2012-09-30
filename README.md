@@ -65,7 +65,7 @@ API naming convention
     var font = pdf.font('Helvetica');            HPDF_Font font = HPDF_PDF_GetFont(pdf, 'Helvetica', NULL);
 ```
 
-- Instead of the error handling function in C ``Exception``s are thrown in Javascript
+- Instead of calling a error handler in C, an ``Exception`` is thrown in Javascript
 
 
 Dependencies
