@@ -104,5 +104,5 @@ page.endText();
 
 window.addFile( pdf.toDataUri() )
 
-pdf.destroy()
+pdf.free()
 

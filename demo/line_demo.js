@@ -281,5 +281,5 @@ page.stroke();
 window.addFile( pdf.toDataUri() )
 
 /* clean up */
-pdf.destroy();
+pdf.free();
 

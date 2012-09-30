@@ -1,6 +1,8 @@
 var PAGE_HEIGHT = 210;
 
-function main() {
+function main(response) {
+  var samp_text = this.responseText;
+
   var pdf = new HPDF();
 
   /* configure pdf-document to be compressed. */
@@ -37,16 +39,16 @@ function main() {
   root = pdf.createOutline(undefined, "JP font demo");
   root.setOpened(true);
 
-  for (i = 0; i <= 15; i++) {
+  for (var i = 0; i <= 15; i++) {
       /* add a new page object. */
       var page = pdf.addPage();
 
       /* create outline entry */
-      var outline = pdf.createOutline(root, font.fontName(detail_font[i]));
+      var outline = pdf.createOutline(root, detail_font[i].fontName());
       var dst = page.createDestination();
       outline.setDestination(dst);
 
-      var title_font = pdf.font("Helvetica", NULL);
+      var title_font = pdf.font("Helvetica");
       page.setFontAndSize(title_font, 10);
 
       page.beginText();
@@ -80,6 +82,7 @@ function main() {
       page.showText(samp_text);
 
       var p = page.currentTextPos();
+      console.warn(p);
 
       /* finish to print text. */
       page.endText();
@@ -87,7 +90,7 @@ function main() {
       page.setLineWidth(0.5);
 
       var x_pos = 20;
-      for (var j = 0; j <= strlen (samp_text) / 2; j++) {
+      for (var j = 0; j <= samp_text.length / 2; j++) {
           page.moveTo(x_pos, p.y - 10);
           page.lineTo(x_pos, p.y - 12);
           page.stroke();
@@ -112,7 +115,7 @@ function main() {
 
   window.addFile( pdf.toDataUri() )
 
-  pdf.destroy()
+  pdf.free()
 }
 
 var xhr = new XMLHttpRequest();

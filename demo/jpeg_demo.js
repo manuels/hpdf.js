@@ -72,5 +72,5 @@ function main() {
 
   window.addFile( pdf.toDataUri() )
 
-  pdf.destroy()
+  pdf.free()
 }

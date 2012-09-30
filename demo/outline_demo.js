@@ -20,7 +20,7 @@ var page = [];
 /* Add 3 pages to the document. */
 page[0] = pdf.addPage();
 page[0].setFontAndSize(font, 30);
-print_page(page[0], 1);
+print_page(page[0], 0);
 
 page[1] = pdf.addPage();
 page[1].setFontAndSize(font, 30);
@@ -28,7 +28,7 @@ print_page(page[1], 1);
 
 page[2] = pdf.addPage();
 page[2].setFontAndSize(font, 30);
-print_page(page[2], 1);
+print_page(page[2], 2);
 
 /* create outline root. */
 var root = pdf.createOutline(undefined, "OutlineRoot");
@@ -61,5 +61,5 @@ outline[2].setDestination(dst);
 
 window.addFile( pdf.toDataUri() )
 
-pdf.destroy()
+pdf.free()
 

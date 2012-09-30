@@ -116,5 +116,5 @@ print_grid(pdf, page);
 
 window.addFile( pdf.toDataUri() )
 
-pdf.destroy()
+pdf.free()
 
