@@ -20,6 +20,37 @@ class Encoder
 
 
 
+class ExtGState
+  constructor: (@doc, @gstate) ->
+
+
+  setAlphaFill: (alpha) ->
+    ccall(@doc, 'HPDF_ExtGState_SetAlphaFill', 'number', ['number', 'number'], [@gstate, alpha])
+
+
+  setAlphaStroke: (alpha) ->
+    ccall(@doc, 'HPDF_ExtGState_SetAlphaStroke', 'number', ['number', 'number'], [@gstate, alpha])
+
+
+  setBlendMode: (mode) ->
+    id = 0
+    switch mode.toLowerCase()
+      when 'normal'      then id = 0  # HPDF_BM_NORMAL
+      when 'multiply'    then id = 1  # HPDF_BM_MULTIPLY
+      when 'screen'      then id = 2  # HPDF_BM_SCREEN
+      when 'overlay'     then id = 3  # HPDF_BM_OVERLAY
+      when 'darken'      then id = 4  # HPDF_BM_DARKEN
+      when 'lighten'     then id = 5  # HPDF_BM_LIGHTEN
+      when 'color_dodge' then id = 6  # HPDF_BM_COLOR_DODGE
+      when 'color_bum'   then id = 7  # HPDF_BM_COLOR_BUM
+      when 'hard_light'  then id = 8  # HPDF_BM_HARD_LIGHT
+      when 'soft_light'  then id = 9  # HPDF_BM_SOFT_LIGHT
+      when 'difference'  then id = 10 # HPDF_BM_DIFFERENCE
+      when 'exclushon'   then id = 11 # HPDF_BM_EXCLUSHON
+    ccall(@doc, 'HPDF_ExtGState_SetBlendMode', 'number', ['number', 'number'], [@gstate, id])
+
+
+
 class Annotation
   constructor: (@doc, @annot) ->
 
@@ -105,6 +136,10 @@ class Image
 
 class Page
   constructor: (@doc, @page) ->
+
+
+  closePathFillStroke: ->
+    ccall(@doc, 'HPDF_Page_ClosePathFillStroke', 'number', ['number'], [@page])
 
 
   setFontAndSize: (font, size) ->
@@ -340,6 +375,10 @@ class Page
     ccall(@doc, 'HPDF_Page_Arc', 'number', ['number','number','number','number','number','number'], [@page,x,y,ray,arc1,arc2])
 
 
+  setExtGState: (gstate) ->
+    ccall(@doc, 'HPDF_Page_SetExtGState', 'number', ['number','number'], [@page, gstate.gstate])
+
+
   circle: (x,y,ray) ->
     ccall(@doc, 'HPDF_Page_Circle', 'number', ['number','number','number','number'], [@page,x,y,ray])
 
@@ -360,6 +399,11 @@ class HPDF
   font: (name, encoding) ->
     ret = ccall(this, 'HPDF_GetFont', 'number', ['number', 'string', 'string'], [@hpdf, name, encoding])
     new Font(this, ret)
+
+
+  createExtGState: ->
+    ret = ccall(this, 'HPDF_CreateExtGState', 'number', ['number'], [@hpdf])
+    new ExtGState(this, ret)
 
 
   encoder: (name) ->
