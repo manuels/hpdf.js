@@ -131,7 +131,7 @@ var reader = new FileReader();
 reader.onload = function (evt) {
   var file_contents = evt.target.result;
 
-  var customfont = pdf.loadTtFont(file_contents);
+  var customfont = pdf.loadTTFont(file_contents);
   var title = "This is a test!";
   page = pdf.addPage();
   page.setFontAndSize(customfont, 24);
@@ -165,7 +165,7 @@ xhr.open('GET', url, true);
 xhr.responseType = 'arraybuffer';
 
 xhr.onload = function(e) {
-  var customfont = pdf.loadTtFont(xhr.response);
+  var customfont = pdf.loadTTFont(xhr.response);
   var title = "This is a test!";
   page = pdf.addPage();
   page.setFontAndSize(customfont, 24);
