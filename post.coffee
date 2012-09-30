@@ -374,7 +374,7 @@ class HPDF
     FS.analyzePath(filename).object.contents
 
 
-  loadTtFont: (file, opts) ->
+  loadTTFont: (file, opts) ->
     embed_flag = 1 # true
     opts ?= {}
     if opts.embed? and opts.embed == no
