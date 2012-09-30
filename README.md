@@ -49,6 +49,10 @@ API naming convention
     var root = pdf.createOutline(undefined,      root = HPDF_CreateOutline (pdf, NULL, "OutlineRoot", NULL);
        "OutlineRoot", undefined);
 
+- Use strings (case irrelevant) in Javascript where you would use constants in C
+    // javascript code                           C code
+    page.setSize('B5', 'landscape');             HPDF_Page_SetSize(page, HPDF_PAGE_SIZE_B5, HPDF_PAGE_LANDSCAPE);
+
 - Tailing ``NULL``s/``undefined``s can be ommitted
     // javascript code                           C code
     var font = pdf.font('Helvetica');           HPDF_Font font = HPDF_PDF_GetFont(pdf, 'Helvetica', NULL);
