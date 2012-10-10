@@ -139,6 +139,18 @@ class Image
 class Page
   constructor: (@doc, @page) ->
 
+  
+  concat: (a,b,c,d,x,y) ->
+    ccall(@doc, 'HPDF_Page_Concat', 'number', ['number','number','number','number','number','number','number'], [@page,a,b,c,d,x,y])
+
+
+  setTextMatrix: (a,b,c,d,x,y) ->
+    ccall(@doc, 'HPDF_Page_SetTextMatrix', 'number', ['number','number','number','number','number','number','number'], [@page,a,b,c,d,x,y])
+
+
+  textMatrix: ->
+    ccall(@doc, 'HPDF_Page_GetTextMatrix', 'number', ['number'], [@page])
+
 
   closePathFillStroke: ->
     ccall(@doc, 'HPDF_Page_ClosePathFillStroke', 'number', ['number'], [@page])
@@ -277,6 +289,38 @@ class Page
   textOut: (x,y,text) ->
     ccall(@doc, 'HPDF_Page_TextOut', 'number', ['number','number','number','string'], [@page,x,y,text])
           
+
+  textRect: (left, top, right, bottom, text, align) ->
+    # allow call signature textRect([left, top, right, bottom], text, align)
+    if left instanceof Array
+      rect = left
+      text = top
+      align = right
+
+      [left, top, right, bottom] = rect
+
+    # allow call signature textRect({left: left, top: top, right: right, bottom: bottom], text, align)
+    if left instanceof Object
+      rect = left
+      text = top
+      align = right
+
+      left = rect.left
+      top = rect.top
+      right = rect.right
+      bottom = rect.bottom
+
+    switch align[0].toLowerCase()
+      when 'l' then align = 0
+      when 'r' then align = 1
+      when 'c' then align = 2
+      when 'j' then align = 3
+
+    len_ptr = Module['allocate']([0], 'i32', ALLOC_NORMAL)
+    ccall(@doc, 'HPDF_Page_TextRect', 'number',
+      ['number', 'number', 'number', 'number', 'number', 'string', 'number', 'number'],
+      [@page,    left,     top,      right,    bottom,   text,      align,   len_ptr])
+
 
   moveTo: (x,y) ->
     ccall(@doc, 'HPDF_Page_MoveTo', 'number', ['number','number','number'], [@page,x,y])
