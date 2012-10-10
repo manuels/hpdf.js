@@ -321,6 +321,8 @@ class Page
       ['number', 'number', 'number', 'number', 'number', 'string', 'number', 'number'],
       [@page,    left,     top,      right,    bottom,   text,      align,   len_ptr])
 
+    return getValue(len_ptr, 'i32')
+
 
   moveTo: (x,y) ->
     ccall(@doc, 'HPDF_Page_MoveTo', 'number', ['number','number','number'], [@page,x,y])
