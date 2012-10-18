@@ -194,7 +194,7 @@ class Page
   createTextAnnot: (rect, text, encoder) ->
     if rect not instanceof Array
       rect = [rect.left, rect.bottom, rect.right, rect.top]
-    ret = ccall(@doc, 'HPDF_Page_CreateTextAnnot', 'number', ['number', 'number','number','number','number', 'string', 'number'], [@page, rect[0], rect[1], rect[2], rect[3], text, encoder?.encoder])
+    ret = ccall(@doc, 'HPDF_Page_CreateTextAnnot', 'number', ['number', 'number','number','number','number', 'number', 'number'], [@page, rect[0], rect[1], rect[2], rect[3], toAscii(text), encoder?.encoder])
     new TextAnnotation(@doc, ret)
 
 
@@ -239,7 +239,7 @@ class Page
 
 
   textWidth: (text) ->
-    ccall(@doc, 'HPDF_Page_TextWidth', 'number', ['number', 'string'], [@page, text])
+    ccall(@doc, 'HPDF_Page_TextWidth', 'number', ['number', 'number'], [@page, toAscii(text)])
 
 
   setWidth: (w) ->
@@ -283,11 +283,11 @@ class Page
 
           
   showText: (text) ->
-    ccall(@doc, 'HPDF_Page_ShowText', 'number', ['number', 'string'], [@page, text])
+    ccall(@doc, 'HPDF_Page_ShowText', 'number', ['number', 'number'], [@page, toAscii(text)])
           
 
   textOut: (x,y,text) ->
-    ccall(@doc, 'HPDF_Page_TextOut', 'number', ['number','number','number','string'], [@page,x,y,text])
+    ccall(@doc, 'HPDF_Page_TextOut', 'number', ['number','number','number','number'], [@page,x,y,toAscii(text)])
           
 
   textRect: (left, top, right, bottom, text, align) ->
@@ -318,8 +318,8 @@ class Page
 
     len_ptr = Module['allocate']([0], 'i32', ALLOC_NORMAL)
     ccall(@doc, 'HPDF_Page_TextRect', 'number',
-      ['number', 'number', 'number', 'number', 'number', 'string', 'number', 'number'],
-      [@page,    left,     top,      right,    bottom,   text,      align,   len_ptr])
+      ['number', 'number', 'number', 'number', 'number', 'number',      'number', 'number'],
+      [@page,    left,     top,      right,    bottom,   toAscii(text), align,    len_ptr])
 
     return getValue(len_ptr, 'i32')
 
@@ -361,7 +361,7 @@ class Page
 
 
   showTextNextLine: (text) ->
-    ccall(@doc, 'HPDF_Page_ShowTextNextLine', 'number', ['number','string'], [@page,text])
+    ccall(@doc, 'HPDF_Page_ShowTextNextLine', 'number', ['number','number'], [@page,toAscii(text)])
 
 
   fill: ->
@@ -449,6 +449,10 @@ class HPDF
     new Font(this, ret)
 
 
+  setCurrentEncoder: (encoding) ->
+    ccall(this, 'HPDF_SetCurrentEncoder', 'number', ['number', 'string'], [@hpdf, encoding])
+
+
   createExtGState: ->
     ret = ccall(this, 'HPDF_CreateExtGState', 'number', ['number'], [@hpdf])
     new ExtGState(this, ret)
@@ -520,7 +524,7 @@ class HPDF
 
 
   setPassword: (owner_passwd, user_passwd) ->
-    ccall(this, 'HPDF_SetPassword', 'number', ['number', 'string', 'string'], [@hpdf, owner_passwd, user_passwd])
+    ccall(this, 'HPDF_SetPassword', 'number', ['number', 'number', 'number'], [@hpdf, toAscii(owner_passwd), toAscii(user_passwd)])
 
 
   loadPngImage: (file) ->
@@ -581,7 +585,7 @@ class HPDF
 
 
   createOutline: (parent, title, encoder) ->
-    ret = ccall(this, 'HPDF_CreateOutline', 'number', ['number', 'number', 'string', 'number'], [@hpdf, parent, title, encoder?.encoder])
+    ret = ccall(this, 'HPDF_CreateOutline', 'number', ['number', 'number', 'number', 'number'], [@hpdf, parent, toAscii(title), encoder?.encoder])
     return new Outline(this, ret)
 
 
@@ -601,6 +605,16 @@ fileify = (file) ->
     FS.createDataFile('/', filename, contents, true, true)
 
   return filename
+
+
+# convert UTF-8 string to ASCII byte array
+toAscii = (text) ->
+  tmp = []
+  for i in [1..text.length]
+    tmp[i-1] = text.charCodeAt(i-1)
+  tmp[text.length] = 0
+  return Module['allocate'](tmp, 'i8', ALLOC_NORMAL)
+
 
 
 ccall = (args...) ->

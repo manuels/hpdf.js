@@ -5,10 +5,7 @@ EMSCRIPTEN=~/bin/emscripten
 EMCC=$EMSCRIPTEN/emcc
 CFLAGS=
 COFFEE=/usr/bin/coffee
-$COFFEE -c post.coffee
-$EMCC $CFLAGS \
-  -D 'HPDF_EXPORT(type)=__attribute__((used)) type' \
-  ./zlib/*.c \
+INCLUDES="./zlib/*.c \
   ./libpng/png.c \
   ./libpng/pngerror.c \
   ./libpng/pngget.c \
@@ -27,5 +24,16 @@ $EMCC $CFLAGS \
   ./libharu/src/*.c \
   -I./libharu/include \
   -I./libpng \
-  -I$EMSCRIPTEN/system/include/emscripten main.c --post-js post.js -o hpdf.js
+  -I$EMSCRIPTEN/system/include/emscripten main.c"
+
+
+$COFFEE -c post.coffee
+
+$EMCC $CFLAGS \
+  -D 'HPDF_EXPORT(type)=__attribute__((used)) type' \
+  $INCLUDES --post-js post.js -o hpdf.js
+
+$EMCC --minify 1 $CFLAGS \
+  -D 'HPDF_EXPORT(type)=__attribute__((used)) type' \
+  $INCLUDES --post-js post.js -o hpdf.min.js
 
