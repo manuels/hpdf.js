@@ -39,7 +39,7 @@ API naming convention
     pdf.free();                                  HPDF_Free(pdf);
 ```
 
-- ``Get`` in the function name is ommitted and ``Set`` is kept
+- ``Get`` in the function name is omitted and ``Set`` is kept
 ```
     // javascript code                           // C code
     var width = page.width();                    HPDF_REAL width = HPDF_Page_GetWidth(page);
@@ -59,7 +59,7 @@ API naming convention
     page.setSize('B5', 'landscape');             HPDF_Page_SetSize(page, HPDF_PAGE_SIZE_B5, HPDF_PAGE_LANDSCAPE);
 ```
 
-- Tailing ``NULL``/``undefined`` can be ommitted
+- Tailing ``NULL``/``undefined`` can be omitted
 ```
     // javascript code                           // C code
     var font = pdf.font('Helvetica');            HPDF_Font font = HPDF_PDF_GetFont(pdf, 'Helvetica', NULL);
