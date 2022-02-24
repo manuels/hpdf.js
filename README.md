@@ -2,7 +2,7 @@ hpdf.js
 =======
 
 Create PDFs in your browser (port of libharu)
-[See the demo page](http://manuels.github.com/hpdf.js/)
+[See the demo page](http://manuels.github.io/hpdf.js/)
 
 
 Why?
@@ -25,7 +25,7 @@ Features
 How to use
 ==========
 
-Include `hpdf.js` or `hpdf.min.js` in your HTML file and [see examples](http://manuels.github.com/hpdf.js/) or [libharu API reference](https://github.com/libharu/libharu/wiki)
+Include `hpdf.js` or `hpdf.min.js` in your HTML file and [see examples](http://manuels.github.io/hpdf.js/) or [libharu API reference](https://github.com/libharu/libharu/wiki)
 
 
 API naming convention
